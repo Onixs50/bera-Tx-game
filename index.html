@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mint Your Transaction NFT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+       <link rel="icon" href="https://raw.githubusercontent.com/Onixs50/bera-Tx-game/main/bear.png" type="image/png">
+    <style>
+        body {
+            font-family: 'Permanent Marker', cursive;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://raw.githubusercontent.com/Onixs50/bera-Tx-game/main/val.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #000000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+       justify-content: flex-start;
+    align-items: flex-start;  /* Aligns items to the left */
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.social-links {
+    position: absolute;
+    left: 40px;  /* Moved further right */
+    top: 20px;
+    z-index: 1001;
+}
+.social-links a {
+    color: #ff0000;  /* Changed to red */
+    font-size: 24px;  /* Made icons larger */
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+
+#connectWallet {
+    background-color: #FFD700;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Permanent Marker', cursive;
+    transition: background-color 0.3s;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 1001;
+}
+
+        #connectWallet:hover::after {
+            content: 'Disconnect';
+        }
+        #mintNFT {
+            display: none;
+            background-color: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Permanent Marker', cursive;
+            margin-top: 20px;
+        }
+        #recheck {
+            background-color: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Permanent Marker', cursive;
+            margin-top: 20px;
+        }
+
+#mintNFT, #recheck {
+    align-self: flex-start;
+    margin: 10px 0;
+}
+
+main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;  /* Aligns items to the left */
+}
+
+main h1 {
+    text-align: left;
+    margin-bottom: 20px;
+    width: 100%;
+}
+        #info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-image: url('info.png');
+            background-size: cover;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        #infoPanel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            height: 80%;
+            background-image: url('info.png');
+            background-size: cover;
+            background-position: center;
+            padding: 40px;
+            font-family: 'Roboto', sans-serif;
+            border-radius: 10px;
+            color: #FFD700;
+            overflow: auto;
+            transition: all 0.5s ease-in-out;
+        }
+        #infoPanel.hidden {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+        }
+        #closeInfo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FFD700;
+            border: none;
+            color: black;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #animation {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            z-index: 1001;
+            border: 5px solid #FFD700;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        #nftImage {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            z-index: 1002;
+            animation: zoomInOut 5s ease-in-out;
+        }
+        @keyframes zoomInOut {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        #coffeeDonation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #FFD700;
+            color: black;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+        }
+        #coffeeDonation img {
+            width: 20px;
+            height: 20px;
+        }
+        #coffeeDonationPanel {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: #FFD700;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+            font-family: 'Roboto', sans-serif;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        #transactionCountPanel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #FFD700;
+            color: black;
+            padding: 40px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-family: 'Roboto', sans-serif;
+        }
+        .waiting {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #FFD700;
+            z-index: 1003;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid #FFD700;
+            border-top: 5px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1004;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+        .waiting::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        #congratulations {
+            display: none;
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            color: #FFD700;
+            z-index: 1003;
+            text-align: center;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+#walletAddress, #transactionCount {
+    text-align: left;
+    width: 100%;
+    margin-bottom: 10px;
+}
+        #tokenContainer {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .token {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .token img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+        .token-name {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .token-balance {
+            font-weight: bold;
+        }
+
+#nftFeedback {
+    display: none;
+    position: fixed;
+    top: 75%; /* افزایش مقدار به 62% */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #FFD700;
+    text-align: center;
+    text-shadow: 4px 4px 8px #000000; /* افزایش سایه */
+    animation: fadeInOut 5s ease-in-out;
+}
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            20%, 80% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay">Loading...</div>
+<div class="container">
+    <header>
+        <div class="social-links">
+            <a href="https://twitter.com/sadeghss50" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://github.com/onixs50" target="_blank"><i class="fab fa-github"></i></a>
+        </div>
+        <button id="connectWallet">Connect Wallet</button>
+    </header>
+    <main>
+        <h1 style="color: #000000; text-shadow: 2px 2px 4px #FFFFFF;">Mint Your Transaction NFT</h1>
+        <p id="walletAddress" style="color: #FFFFFF;"></p>
+        <p id="transactionCount" style="color: #FFFFFF;"></p>
+        <button id="mintNFT">Mint NFT</button>
+        <button id="recheck">Recheck Transaction Count</button>
+    </main>
+</div>
+    <div id="info"></div>
+    <div id="infoPanel">
+        <button id="closeInfo">Close</button>
+        <h2 style="color: #E0E0E0; text-shadow: 2px 2px 4px #000000;">Onixia Game Information</h2>
+        <p style="color: #E0E0E0; text-shadow: 2px 2px 4px #000000;">This is a unique NFT minting game where your transaction count determines the rarity of your NFT. The more transactions you have, the rarer your NFT becomes!</p>
+        <p style="color: #E0E0E0; text-shadow: 2px 2px 4px #000000;">To increase your transaction count and earn better NFTs, you can visit the <a href="https://onixs50.github.io/onixia-game/" style="color:#FFD700;font-weight:bold;">Onixia game</a> and participate in the various activities. The more you interact with the Onixia game, the higher your chances of winning exclusive tokens and NFTs.</p>
+        <p style="color: #E0E0E0; text-shadow: 2px 2px 4px #000000;">Remember, increasing your transaction count will enhance your chances of receiving an airdrop!</p>
+        <div class="social-links">
+            <a href="https://twitter.com/sadeghss50" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://github.com/onixs50" target="_blank"><i class="fab fa-github"></i></a>
+        </div>
+    </div>
+    <div id="animation"></div>
+    <div class="waiting">Waiting</div>
+    <div id="congratulations">Congratulations!<br>Your NFT has been minted!</div>
+    <div id="nftImage"></div>
+    <div id="nftFeedback"></div>
+    <div id="coffeeDonation">
+        <img src="c.png" alt="Coffee" />
+    </div>
+    <div id="coffeeDonationPanel">
+        <h3 style="color: black;">Buy me a coffee</h3>
+        <p style="color: black;">You can send tokens to this address on any EVM-compatible network:</p>
+        <p style="color: black; font-size: 12px; font-weight: bold;">0x7f60244433af55b0f030f05a798a48efc01b18b1</p>
+        <p style="color: black;">Thank you for your support!</p>
+        <p style="color: black;">With respect,<br>Onixia</p>
+    </div>
+    <div id="transactionCountPanel"></div>
+    <div class="loading"></div>
+    <div id="tokenContainer">
+<div class="token" id="bgtToken">
+            <img src="https://raw.githubusercontent.com/Onixs50/bera-Tx-game/66e5fb6ef83db9690b361ed4c1ce0cc3e6fb6e36/bgt.jpg" alt="BGT Token">
+            <span class="token-name">BGT</span>
+            <span class="token-balance"></span>
+        </div>
+        <div class="token" id="honeyToken">
+            <img src="https://raw.githubusercontent.com/Onixs50/bera-Tx-game/66e5fb6ef83db9690b361ed4c1ce0cc3e6fb6e36/honey.png" alt="Honey Token">
+            <span class="token-name">Honey</span>
+            <span class="token-balance"></span>
+        </div>
+        <div class="token" id="beraToken">
+            <img src="https://raw.githubusercontent.com/Onixs50/bera-Tx-game/66e5fb6ef83db9690b361ed4c1ce0cc3e6fb6e36/bera.png" alt="Bera Token">
+            <span class="token-name">Wbera</span>
+            <span class="token-balance"></span>
+        </div>
+    </div>
+
+    <script>
+        let web3;
+        let contract;
+        const contractAddress = '0x974f789375aEf7893db018b430eEf9315710E934';
+        const contractABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"MINT_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextTokenId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"tokenOwners","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"transactionCount","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mintNFT","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+
+        const tokenAddresses = {
+            BGT: '0xbDa130737BDd9618301681329bF2e46A016ff9Ad',
+            Honey: '0x0E4aaF1351de4c0264C5c7056Ef3777b41BD8e03',
+            Wbera: '0x7507c1dc16935B82698e4C63f2746A2fCf994dF8'
+        };
+
+        window.addEventListener('load', async () => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('mintNFT').addEventListener('click', mintNFT);
+            document.getElementById('recheck').addEventListener('click', checkTransactionCount);
+            document.getElementById('info').addEventListener('click', () => {
+                document.getElementById('infoPanel').classList.remove('hidden');
+                document.getElementById('infoPanel').style.display = 'block';
+            });
+            document.getElementById('closeInfo').addEventListener('click', () => {
+                document.getElementById('infoPanel').classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('infoPanel').style.display = 'none';
+                }, 500);
+            });
+            document.getElementById('coffeeDonation').addEventListener('click', toggleCoffeeDonation);
+            document.addEventListener('click', closeCoffeeDonation);
+        });
+
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
+                    await switchToBeraChain();
+                    const accounts = await web3.eth.getAccounts();
+                    const address = accounts[0];
+                    document.getElementById('walletAddress').textContent = `Connected: ${address}`;
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    await checkTransactionCount();
+                    document.getElementById('mintNFT').style.display = 'block';
+                    document.getElementById('connectWallet').textContent = 'Connected';
+                    await displayTokenBalances();
+                } catch (error) {
+                    console.error('Failed to connect wallet:', error);
+                }
+            } else {
+                console.log('Please install MetaMask!');
+            }
+        }
+
+        async function switchToBeraChain() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x138d4' }], // 80084 in hexadecimal
+                });
+            } catch (switchError) {
+                // This error code indicates that the chain has not been added to MetaMask
+                if (switchError.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x138d4',
+                                chainName: 'Bera Chain',
+                                nativeCurrency: {
+                                    name: 'BERA',
+                                    symbol: 'BERA',
+                                    decimals: 18
+                                },
+                                rpcUrls: ['https://bartio.rpc.berachain.com/'],
+                                blockExplorerUrls: ['https://explorer.berachain.com']
+                            }]
+                        });
+                    } catch (addError) {
+                        console.error('Failed to add Bera Chain:', addError);
+                    }
+                } else {
+                    console.error('Failed to switch to Bera Chain:', switchError);
+                }
+            }
+        }
+
+        async function checkTransactionCount() {
+            const accounts = await web3.eth.getAccounts();
+            const address = accounts[0];
+            const transactionCount = await web3.eth.getTransactionCount(address);
+            document.getElementById('transactionCount').textContent = `Transaction Count: ${transactionCount}`;
+            document.getElementById('transactionCountPanel').textContent = `Transaction Count: ${transactionCount}`;
+            document.getElementById('transactionCountPanel').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('transactionCountPanel').style.display = 'none';
+            }, 3000);
+        }
+
+        async function mintNFT() {
+            const accounts = await web3.eth.getAccounts();
+            const address = accounts[0];
+            const transactionCount = await web3.eth.getTransactionCount(address);
+            
+            document.querySelector('.loading').style.display = 'block';
+            
+            try {
+                await contract.methods.mintNFT(transactionCount, 1).send({
+                    from: address,
+                    value: web3.utils.toWei('0.02', 'ether')
+                });
+                document.querySelector('.loading').style.display = 'none';
+                playAnimation(transactionCount);
+            } catch (error) {
+                console.error('Failed to mint NFT:', error);
+                document.querySelector('.loading').style.display = 'none';
+            }
+        }
+
+        function playAnimation(transactionCount) {
+            const animationElement = document.getElementById('animation');
+            const nftImageElement = document.getElementById('nftImage');
+            const waitingElement = document.querySelector('.waiting');
+            const congratulationsElement = document.getElementById('congratulations');
+            const nftFeedbackElement = document.getElementById('nftFeedback');
+            let videoSource, nftImageSource, feedbackMessage;
+            
+            if (transactionCount >= 1 && transactionCount <= 50) {
+                videoSource = '1.mp4';
+                nftImageSource = '1.png';
+                feedbackMessage = "Keep going! More transactions will unlock rarer NFTs. We're excited to see you interact more with Onixia games!";
+            } else if (transactionCount >= 200 && transactionCount <= 300) {
+                videoSource = '2.mp4';
+                nftImageSource = '2.png';
+                feedbackMessage = "Great progress! You're on your way to the rarest NFTs. Keep engaging with Onixia games for even better rewards!";
+            } else if (transactionCount >= 300 && transactionCount <= 500) {
+                videoSource = '3.mp4';
+                nftImageSource = '3.png';
+                feedbackMessage = "You're doing fantastic! Your high transaction count is unlocking rare NFTs. Keep up the great work with Onixia games!";
+            } else {
+                videoSource = '4.mp4';
+                nftImageSource = '4.png';
+                feedbackMessage = "Incredible! You've reached the highest tier. Your dedication to Onixia games has paid off with the rarest NFTs!";
+            }
+            
+            animationElement.innerHTML = `<video width="100%" height="100%" autoplay>
+                <source src="${videoSource}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>`;
+            animationElement.style.display = 'block';
+            
+            const video = animationElement.querySelector('video');
+            video.onended = () => {
+                animationElement.style.display = 'none';
+                waitingElement.style.display = 'block';
+                
+                setTimeout(() => {
+                    waitingElement.style.display = 'none';
+                    congratulationsElement.style.display = 'block';
+                    setTimeout(() => {
+                        congratulationsElement.style.display = 'none';
+                        nftImageElement.style.backgroundImage = `url(${nftImageSource})`;
+                        nftImageElement.style.backgroundSize = 'contain';
+                        nftImageElement.style.backgroundRepeat = 'no-repeat';
+                        nftImageElement.style.backgroundPosition = 'center';
+                        nftImageElement.style.display = 'block';
+                        
+                        nftFeedbackElement.textContent = feedbackMessage;
+                        nftFeedbackElement.style.display = 'block';
+
+                        setTimeout(() => {
+                            nftImageElement.style.display = 'none';
+                            nftFeedbackElement.style.display = 'none';
+                        }, 10000);
+                    }, 2000);
+                }, 2000);
+            };
+        }
+
+        function toggleCoffeeDonation(event) {
+            event.stopPropagation();
+            const panel = document.getElementById('coffeeDonationPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function closeCoffeeDonation(event) {
+            const panel = document.getElementById('coffeeDonationPanel');
+            const button = document.getElementById('coffeeDonation');
+            if (!panel.contains(event.target) && event.target !== button) {
+                panel.style.display = 'none';
+            }
+        }
+
+        async function displayTokenBalances() {
+            const accounts = await web3.eth.getAccounts();
+            const address = accounts[0];
+
+            for (const [tokenName, tokenAddress] of Object.entries(tokenAddresses)) {
+                const tokenContract = new web3.eth.Contract([{
+                    "constant": true,
+                    "inputs": [{"name": "_owner", "type": "address"}],
+                    "name": "balanceOf",
+                    "outputs": [{"name": "balance", "type": "uint256"}],
+                    "type": "function"
+                }], tokenAddress);
+
+                try {
+                    const balance = await tokenContract.methods.balanceOf(address).call();
+                    const formattedBalance = web3.utils.fromWei(balance, 'ether');
+
+                    // استفاده از id درست برای نمایش بالانس
+                    const tokenId = tokenName.toLowerCase() === 'wbera' ? 'beraToken' : `${tokenName.toLowerCase()}Token`;
+                    document.querySelector(`#${tokenId} .token-balance`).textContent = formattedBalance;
+                } catch (error) {
+                    console.error(`Failed to fetch balance for ${tokenName}:`, error);
+                }
+            }
+
+            // Animate token display
+            const tokens = document.querySelectorAll('.token');
+            tokens.forEach((token, index) => {
+                setTimeout(() => {
+                    token.style.opacity = '1';
+                    token.style.transform = 'translateX(0)';
+                }, index * 500);
+            });
+        }
+
+        // فراخوانی تابع برای دریافت بالانس
+        displayTokenBalances();
+    </script>
+</body>
+</html>
