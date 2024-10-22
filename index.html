@@ -225,19 +225,20 @@ main h1 {
             width: 20px;
             height: 20px;
         }
-        #coffeeDonationPanel {
-            display: none;
-            position: fixed;
-            bottom: 70px;
-            right: 20px;
-            background-color: #FFD700;
-            color: black;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 300px;
-            font-family: 'Roboto', sans-serif;
-            animation: slideIn 0.5s ease-out;
-        }
+#coffeeDonationPanel {
+    display: none;
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    background-color: #FFD700;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 300px;
+    font-family: 'Roboto', sans-serif;
+    animation: slideIn 0.5s ease-out;
+    z-index: 1002; 
+}
         @keyframes slideIn {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
