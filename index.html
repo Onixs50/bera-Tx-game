@@ -32,7 +32,7 @@
     display: flex;
     flex-direction: column;
        justify-content: flex-start;
-    align-items: flex-start;  /* Aligns items to the left */
+    align-items: flex-start; 
 }
 header {
     display: flex;
@@ -107,7 +107,7 @@ main {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;  /* Aligns items to the left */
+    align-items: flex-start; 
 }
 
 main h1 {
@@ -348,13 +348,13 @@ main h1 {
 #nftFeedback {
     display: none;
     position: fixed;
-    top: 75%; /* افزایش مقدار به 62% */
+    top: 75%; /* ا 62% */
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 24px;
     color: #FFD700;
     text-align: center;
-    text-shadow: 4px 4px 8px #000000; /* افزایش سایه */
+    text-shadow: 4px 4px 8px #000000;
     animation: fadeInOut 5s ease-in-out;
 }
         @keyframes fadeInOut {
@@ -638,7 +638,7 @@ main h1 {
                     const balance = await tokenContract.methods.balanceOf(address).call();
                     const formattedBalance = web3.utils.fromWei(balance, 'ether');
 
-                    // استفاده از id درست برای نمایش بالانس
+                    
                     const tokenId = tokenName.toLowerCase() === 'wbera' ? 'beraToken' : `${tokenName.toLowerCase()}Token`;
                     document.querySelector(`#${tokenId} .token-balance`).textContent = formattedBalance;
                 } catch (error) {
@@ -656,7 +656,7 @@ main h1 {
             });
         }
 
-        // فراخوانی تابع برای دریافت بالانس
+        
         displayTokenBalances();
     </script>
 </body>
